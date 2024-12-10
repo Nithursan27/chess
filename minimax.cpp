@@ -26,11 +26,16 @@ int calculateMaterial(Board &board)
     return advantage;
 }
 
+int evaluate(Board &board)
+{
+    return calculateMaterial(board);
+}
+
 int minimax(Board board, int depth, int alpha, int beta, bool isMax)
 {
     if (depth == 0) // add game over condition as OR check
     {
-        return calculateMaterial(board);
+        return evaluate(board);
     }
 
     Movelist moves;
