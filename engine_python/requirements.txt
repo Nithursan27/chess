@@ -1,2 +1,6 @@
 chess==1.11.1
 numpy==2.2.2
+chess==1.11.1
+chess-board==0.4.1
+numpy==2.2.2
+pygame==2.6.1
