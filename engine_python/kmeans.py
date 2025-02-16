@@ -20,44 +20,80 @@ def convert_outcome(outcome):
 def initialise_data():
     pgn = open("data/2500-4000.pgn")
     evaluation_scores = []
-    turn_counts = []
+    mobility_scores = []
     outcomes = []
+    sample_count = 1000
     i = 0
-    while (i < 1):
+    while (i < sample_count):
         game = chess.pgn.read_game(pgn)
         if game is not None:
             board = game.board()
-            turns = 0
             for move in game.mainline_moves():
                 board.push(move)
-                turns += 1
+            
             evaluation = minimax.evaluate(board)
+            mobility = len(list(board.legal_moves))
             outcome = convert_outcome(game.headers["Result"])
+
             evaluation_scores.append(evaluation)
-            turn_counts.append(turns)
+            mobility_scores.append(mobility)
             outcomes.append(outcome)
         else:
             break
         i += 1
-    x_data = np.array([evaluation_scores, turn_counts])
+    data = []
+    for i in range(0, sample_count):
+        data.append([evaluation_scores[i], mobility_scores[i]])
+        
+    x_data = np.array(data)
     y_data = np.array(outcomes)
 
     return (x_data, y_data)
 
-def initialise_centroids(data, k):
+def initialise_centroids(X, k):
     np.random.seed(0)
-    random_indices = np.random.permutation(data.shape[0])
+    random_indices = np.random.permutation(X.shape[0])
+    centroids = X[random_indices[:k]]
+    return centroids
+
+def assign_clusters(X, centroids):
+    clusters = []
+    for x in X:
+        distances = np.linalg.norm(x - centroids, axis=1)
+        cluster = np.argmin(distances)
+        clusters.append(cluster)
+    return np.array(clusters)
+
+def update_centroids(X, clusters, k):
+    new_centroids = []
+    for i in range(k):
+        cluster_points = X[clusters == i]
+        new_centroid = cluster_points.mean(axis=0)
+        new_centroids.append(new_centroid)
+    return np.array(new_centroids)
+    
+def k_means(X, k, max_iters=100, tol=1e-4):
+    centroids = initialise_centroids(X, k)
+    for i in range(max_iters):
+        clusters = assign_clusters(X, centroids)
+        new_centroids = update_centroids(X, clusters, k)
+        if np.all(np.abs(new_centroids - centroids) < tol):
+            break
+        centroids = new_centroids
+    return centroids, clusters
 
 
 def main():
     data = initialise_data()
-    x_data = data[0]
-    # x_data, _ = make_blobs(n_samples=300, centers=4, cluster_std=0.60, random_state=0)
-    y_data = data[1]
-    print(data)
-    fig = plt.figure(0)
-    plt.grid(True)
-    plt.scatter(x_data[:, 0],x_data[:, 1])
+    X = data[0]
+    y = data[1]
+    print(X)
+    k = 3
+    final_centroids, final_clusters = k_means(X, k)
+
+    plt.scatter(X[:, 0], X[:, 1], c=final_clusters, s=50, cmap='viridis')
+    plt.scatter(final_centroids[:, 0], final_centroids[:, 1], s=200, c='red', alpha=0.75)
+    plt.title("K-Means Clustering Result")
     plt.show()
     
 if __name__ == "__main__":
