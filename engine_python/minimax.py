@@ -4,16 +4,16 @@ import numpy
 import chess.svg
 
 pieceValues = {
-    'p': -100,
-    'n': -300,
-    'b': -300,
-    'r': -500,
-    'q': -900,
-    'P': 100,
-    'N': 300,
-    'B': 300,
-    'R': 500,
-    'Q': 900
+    'p': -1,
+    'n': -3,
+    'b': -3,
+    'r': -5,
+    'q': -9,
+    'P': 1,
+    'N': 3,
+    'B': 3,
+    'R': 5,
+    'Q': 9
 }
 
 def calculateBoardMaterial(board: chess.Board):
@@ -28,7 +28,7 @@ def evaluate(board: chess.Board):
     return calculateBoardMaterial(board)
 
 def minimax(board: chess.Board, depth: int, alpha: int, beta: int, isMax: bool):
-    if (depth == 0):
+    if (depth == 0) or board.is_game_over():
         return(evaluate(board))
     
     moves = list(board.legal_moves)
@@ -36,18 +36,36 @@ def minimax(board: chess.Board, depth: int, alpha: int, beta: int, isMax: bool):
     if(isMax):
         maxEval = float('-inf')
         for move in moves:
-            board.push_san(move)
+            board.push(move)
             eval = minimax(board, depth - 1, alpha, beta, False)
-            
+            board.pop()
+            maxEval = max(maxEval, eval)
+            alpha = max(alpha, maxEval)
+            if (beta <= alpha):
+                break
         
+        return maxEval
+    
+    else:
+        minEval = float('inf')
+        for move in moves:
+            board.push(move)
+            eval = minimax(board, depth - 1, alpha, beta, True)
+            board.pop()
+            minEval = min(minEval, eval)
+            beta = min(beta, minEval)
+            if (beta <= alpha):
+                break
+        
+        return minEval
+
 
 def main():
-    board = chess.Board("r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4")
+    board = chess.Board("rnbqkbnr/pppppppp/8/1r1n4/2P5/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
     game_board = display.start()
-    print("Advantage: " + str(evaluate(board)))
+    print("Before Advantage: " + str(evaluate(board)))
     print(board.legal_moves)
-    print(float('-inf'))
-    print(float('inf'))
+    print("New advantage:" + str(minimax(board, 1, float('-inf'), float('inf'), True)))
     while True:
         display.check_for_quit()
         display.update(board.fen(), game_board)
