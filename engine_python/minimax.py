@@ -16,6 +16,73 @@ pieceValues = {
     'Q': 9
 }
 
+pawnTable = [
+    0,  0,  0,  0,  0,  0,  0,  0,
+    50, 50, 50, 50, 50, 50, 50, 50,
+    10, 10, 20, 30, 30, 20, 10, 10,
+    5,  5, 10, 25, 25, 10,  5,  5,
+    0,  0,  0, 20, 20,  0,  0,  0,
+    5, -5,-10,  0,  0,-10, -5,  5,
+    5, 10, 10,-20,-20, 10, 10,  5,
+    0,  0,  0,  0,  0,  0,  0,  0
+]
+
+knightTable = [
+    -50,-40,-30,-30,-30,-30,-40,-50,
+    -40,-20,  0,  0,  0,  0,-20,-40,
+    -30,  0, 10, 15, 15, 10,  0,-30,
+    -30,  5, 15, 20, 20, 15,  5,-30,
+    -30,  0, 15, 20, 20, 15,  0,-30,
+    -30,  5, 10, 15, 15, 10,  5,-30,
+    -40,-20,  0,  5,  5,  0,-20,-40,
+    -50,-40,-30,-30,-30,-30,-40,-50
+]
+
+bishopTable = [
+    -20,-10,-10,-10,-10,-10,-10,-20,
+    -10,  0,  0,  0,  0,  0,  0,-10,
+    -10,  0,  5, 10, 10,  5,  0,-10,
+    -10,  5,  5, 10, 10,  5,  5,-10,
+    -10,  0, 10, 10, 10, 10,  0,-10,
+    -10, 10, 10, 10, 10, 10, 10,-10,
+    -10,  5,  0,  0,  0,  0,  5,-10,
+    -20,-10,-10,-10,-10,-10,-10,-20
+]
+
+rookTable = [
+    0,  0,  0,  0,  0,  0,  0,  0,
+    5, 10, 10, 10, 10, 10, 10,  5,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+    -5,  0,  0,  0,  0,  0,  0, -5,
+    0,  0,  0,  5,  5,  0,  0,  0
+]
+
+queenTable = [
+    -20,-10,-10, -5, -5,-10,-10,-20,
+    -10,  0,  0,  0,  0,  0,  0,-10,
+    -10,  0,  5,  5,  5,  5,  0,-10,
+    -5,  0,  5,  5,  5,  5,  0, -5,
+    0,  0,  5,  5,  5,  5,  0, -5,
+    -10,  5,  5,  5,  5,  5,  0,-10,
+    -10,  0,  5,  0,  0,  0,  0,-10,
+    -20,-10,-10, -5, -5,-10,-10,-20
+]
+
+kingTable = [
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -30,-40,-40,-50,-50,-40,-40,-30,
+    -20,-30,-30,-40,-40,-30,-30,-20,
+    -10,-20,-20,-20,-20,-20,-20,-10,
+    20, 20,  0,  0,  0,  0, 20, 20,
+    20, 30, 10,  0,  0, 10, 30, 20
+]
+
+
 def calculateBoardMaterial(board: chess.Board):
     pieces = board.board_fen()
     advantage = 0
@@ -23,6 +90,38 @@ def calculateBoardMaterial(board: chess.Board):
         advantage += pieceValues.get(piece, 0)
     
     return advantage
+
+def calculatePST(board: chess.Board):
+
+    eval = 0
+
+    for square in chess.SQUARES:
+        piece = board.piece_at(square)
+        if piece:
+            match piece.piece_type:
+                case chess.PAWN:
+                    table = pawnTable
+                case chess.BISHOP:
+                    table = bishopTable
+                case chess.KNIGHT:
+                    table = knightTable
+                case chess.ROOK:
+                    table = rookTable
+                case chess.QUEEN:
+                    table = queenTable
+                case chess.KING:
+                    table = kingTable
+                case _:
+                    continue
+            if piece.color == chess.BLACK:
+                square = chess.square(chess.square_file(square), 7 - chess.square_rank(square))
+            
+            if piece.color == chess.WHITE:
+                eval += table[square]
+            else:
+                eval += -table[square]
+        
+    return eval
 
 def evaluate(board: chess.Board):
     if board.is_checkmate():
@@ -32,7 +131,7 @@ def evaluate(board: chess.Board):
     if board.is_stalemate() or board.is_insufficient_material() or board.is_seventyfive_moves():
         return 0
     
-    eval = calculateBoardMaterial(board)
+    eval = calculateBoardMaterial(board) + calculatePST(board)
 
     return eval
 
