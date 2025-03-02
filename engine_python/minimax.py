@@ -4,16 +4,16 @@ import numpy
 import chess.svg
 
 pieceValues = {
-    'p': -1,
-    'n': -3,
-    'b': -3,
-    'r': -5,
-    'q': -9,
-    'P': 1,
-    'N': 3,
-    'B': 3,
-    'R': 5,
-    'Q': 9
+    'p': -10,
+    'n': -30,
+    'b': -30,
+    'r': -50,
+    'q': -90,
+    'P': 10,
+    'N': 30,
+    'B': 30,
+    'R': 50,
+    'Q': 90
 }
 
 pawnTable = [
@@ -202,17 +202,27 @@ def piece_hanging(board: chess.Board, move: chess.Move):
     board.pop()
     return is_hanging
 
+def order_moves(board: chess.Board):
+    captureMoves = []
+    nonCaptureMoves = []
+    for move in board.legal_moves:
+        if board.is_capture(move):
+            captureMoves.append(move)
+        else:
+            nonCaptureMoves.append(move)
+    return captureMoves + nonCaptureMoves
+
 def minimax(board: chess.Board, depth: int, alpha: int, beta: int, isMax: bool):
     if (depth == 0) or board.is_game_over():
-        return (evaluate(board)), None, []
+        return (searchCaptures(board, alpha, beta, depth)), None, []
     
-    moves = []
+    moves = order_moves(board)
     bestMove = None
     bestPV = []
-    for move in list(board.legal_moves):
-        # if piece_hanging(board, move):  
-        #     continue
-        moves.append(move)
+    # for move in list(board.legal_moves):
+    #     # if piece_hanging(board, move):  
+    #     #     continue
+    #     moves.append(move)
     
     if(isMax):
         maxEval = float('-inf')
