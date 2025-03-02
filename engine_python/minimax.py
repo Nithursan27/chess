@@ -117,9 +117,9 @@ def calculatePST(board: chess.Board):
                 square = chess.square(chess.square_file(square), 7 - chess.square_rank(square))
             
             if piece.color == chess.WHITE:
-                eval += table[square]
+                eval += table[square] * 0.1
             else:
-                eval += -table[square]
+                eval += -table[square] * 0.1
         
     return eval
 
@@ -135,9 +135,30 @@ def evaluate(board: chess.Board):
 
     return eval
 
+def searchCaptures(board: chess.Board, alpha: int, beta: int):
+    eval = evaluate(board)
+    if (eval >= beta):
+        return beta
+    alpha = max(alpha, eval)
+
+    captures = [move for move in board.legal_moves if board.is_capture(move)]
+
+    for move in captures:
+        board.push(move)
+        eval = -searchCaptures(board, -beta, -alpha)
+        board.pop()
+
+        if eval >= beta:
+            return beta
+        alpha = max(alpha, eval)
+    
+    return alpha
+
+
+
 def minimax(board: chess.Board, depth: int, alpha: int, beta: int, isMax: bool):
     if (depth == 0) or board.is_game_over():
-        return(evaluate(board)), None, []
+        return(searchCaptures(board, alpha, beta)), None, []
     
     moves = list(board.legal_moves)
     bestMove = None
@@ -181,8 +202,7 @@ def find_best_move(board, depth):
     return eval, bestMove, pv
 
 def main():
-    board = chess.Board("rnbqkbnr/pppppppp/8/1r1n4/2P5/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1")
-    print(board)
+    board = chess.Board("r1bqkb1r/ppp2ppp/2np1n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1")
     game_board = display.start()
     print("Before Advantage: " + str(evaluate(board)))
     print(board.legal_moves)
