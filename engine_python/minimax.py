@@ -17,69 +17,69 @@ pieceValues = {
 }
 
 pawnTable = [
-    0,  0,  0,  0,  0,  0,  0,  0,
-    50, 50, 50, 50, 50, 50, 50, 50,
-    10, 10, 20, 30, 30, 20, 10, 10,
-    5,  5, 10, 25, 25, 10,  5,  5,
-    0,  0,  0, 20, 20,  0,  0,  0,
-    5, -5,-10,  0,  0,-10, -5,  5,
-    5, 10, 10,-20,-20, 10, 10,  5,
-    0,  0,  0,  0,  0,  0,  0,  0
+0,   0,   0,   0,   0,   0,   0,   0,
+30,  30,  30,  40,  40,  30,  30,  30,
+20,  20,  20,  30,  30,  30,  20,  20,
+10,  10,  15,  25,  25,  15,  10,  10,
+5,   5,   5,  20,  20,   5,   5,   5,
+5,   0,   0,   5,   5,   0,   0,   5,
+5,   5,   5, -10, -10,   5,   5,   5,
+0,   0,   0,   0,   0,   0,   0,   0
 ]
 
 knightTable = [
-    -50,-40,-30,-30,-30,-30,-40,-50,
-    -40,-20,  0,  0,  0,  0,-20,-40,
-    -30,  0, 10, 15, 15, 10,  0,-30,
-    -30,  5, 15, 20, 20, 15,  5,-30,
-    -30,  0, 15, 20, 20, 15,  0,-30,
-    -30,  5, 10, 15, 15, 10,  5,-30,
-    -40,-20,  0,  5,  5,  0,-20,-40,
-    -50,-40,-30,-30,-30,-30,-40,-50
+-5,  -5, -5, -5, -5, -5,  -5, -5,
+-5,   0,  0, 10, 10,  0,   0, -5,
+-5,   5, 10, 10, 10, 10,   5, -5,
+-5,   5, 10, 15, 15, 10,   5, -5,
+-5,   5, 10, 15, 15, 10,   5, -5,
+-5,   5, 10, 10, 10, 10,   5, -5,
+-5,   0,  0,  5,  5,  0,   0, -5,
+-5, -10, -5, -5, -5, -5, -10, -5
 ]
 
 bishopTable = [
-    -20,-10,-10,-10,-10,-10,-10,-20,
-    -10,  0,  0,  0,  0,  0,  0,-10,
-    -10,  0,  5, 10, 10,  5,  0,-10,
-    -10,  5,  5, 10, 10,  5,  5,-10,
-    -10,  0, 10, 10, 10, 10,  0,-10,
-    -10, 10, 10, 10, 10, 10, 10,-10,
-    -10,  5,  0,  0,  0,  0,  5,-10,
-    -20,-10,-10,-10,-10,-10,-10,-20
+0,   0,   0,   0,   0,   0,   0,   0,
+0,   0,   0,   0,   0,   0,   0,   0,
+0,   0,   0,   0,   0,   0,   0,   0,
+0,  10,   0,   0,   0,   0,  10,   0,
+5,   0,  10,   0,   0,  10,   0,   5,
+0,  10,   0,  10,  10,   0,  10,   0,
+0,  10,   0,  10,  10,   0,  10,   0,
+0,   0, -10,   0,   0, -10,   0,   0
 ]
 
 rookTable = [
-    0,  0,  0,  0,  0,  0,  0,  0,
-    5, 10, 10, 10, 10, 10, 10,  5,
-    -5,  0,  0,  0,  0,  0,  0, -5,
-    -5,  0,  0,  0,  0,  0,  0, -5,
-    -5,  0,  0,  0,  0,  0,  0, -5,
-    -5,  0,  0,  0,  0,  0,  0, -5,
-    -5,  0,  0,  0,  0,  0,  0, -5,
-    0,  0,  0,  5,  5,  0,  0,  0
+10,  10,  10,  10,  10,  10,  10,  10,
+10,  10,  10,  10,  10,  10,  10,  10,
+0,   0,   0,   0,   0,   0,   0,   0,
+0,   0,   0,   0,   0,   0,   0,   0,
+0,   0,   0,   0,   0,   0,   0,   0,
+0,   0,   0,   0,   0,   0,   0,   0,
+0,   0,   0,  10,  10,   0,   0,   0,
+0,   0,   0,  10,  10,   5,   0,   0
 ]
 
 queenTable = [
-    -20,-10,-10, -5, -5,-10,-10,-20,
-    -10,  0,  0,  0,  0,  0,  0,-10,
-    -10,  0,  5,  5,  5,  5,  0,-10,
-    -5,  0,  5,  5,  5,  5,  0, -5,
-    0,  0,  5,  5,  5,  5,  0, -5,
-    -10,  5,  5,  5,  5,  5,  0,-10,
-    -10,  0,  5,  0,  0,  0,  0,-10,
-    -20,-10,-10, -5, -5,-10,-10,-20
+-20, -10, -10, -5, -5, -10, -10, -20,
+-10,   0,   0,  0,  0,   0,   0, -10,
+-10,   0,   5,  5,  5,   5,   0, -10,
+-5,   0,   5,  5,  5,   5,   0,  -5,
+-5,   0,   5,  5,  5,   5,   0,  -5,
+-10,   5,   5,  5,  5,   5,   0, -10,
+-10,   0,   5,  0,  0,   0,   0, -10,
+-20, -10, -10,  0,  0, -10, -10, -20
 ]
 
 kingTable = [
-    -30,-40,-40,-50,-50,-40,-40,-30,
-    -30,-40,-40,-50,-50,-40,-40,-30,
-    -30,-40,-40,-50,-50,-40,-40,-30,
-    -30,-40,-40,-50,-50,-40,-40,-30,
-    -20,-30,-30,-40,-40,-30,-30,-20,
-    -10,-20,-20,-20,-20,-20,-20,-10,
-    20, 20,  0,  0,  0,  0, 20, 20,
-    20, 30, 10,  0,  0, 10, 30, 20
+0, 0,  0,  0,   0,  0,  0, 0,
+0, 0,  0,  0,   0,  0,  0, 0,
+0, 0,  0,  0,   0,  0,  0, 0,
+0, 0,  0,  0,   0,  0,  0, 0,
+0, 0,  0,  0,   0,  0,  0, 0,
+0, 0,  0,  0,   0,  0,  0, 0,
+0, 0,  0, -5,  -5, -5,  0, 0,
+0, 0, 10, -5,  -5, -5, 10, 0
 ]
 
 
@@ -92,7 +92,6 @@ def calculateBoardMaterial(board: chess.Board):
     return advantage
 
 def calculatePST(board: chess.Board):
-
     eval = 0
 
     for square in chess.SQUARES:
@@ -117,11 +116,23 @@ def calculatePST(board: chess.Board):
                 square = chess.square(chess.square_file(square), 7 - chess.square_rank(square))
             
             if piece.color == chess.WHITE:
-                eval += table[square] * 0.1
+                eval += table[square] 
             else:
-                eval += -table[square] * 0.1
+                eval += -table[square]
         
     return eval
+
+def calculateCentreControl(board: chess.Board):
+    centre_control = 0
+    centre_squares = [chess.square(3, 3), chess.square(3, 4), chess.square(4, 3), chess.square(4, 4)]
+    for square in centre_squares:
+        piece = board.piece_at(square)
+        if piece:
+            if piece.color == chess.WHITE:
+                centre_control += 0.5
+            else:
+                centre_control -= 0.5
+    return centre_control
 
 def evaluate(board: chess.Board):
     if board.is_checkmate():
@@ -131,38 +142,77 @@ def evaluate(board: chess.Board):
     if board.is_stalemate() or board.is_insufficient_material() or board.is_seventyfive_moves():
         return 0
     
-    eval = calculateBoardMaterial(board) + calculatePST(board)
+    queens = 0
+    
+    for square in chess.SQUARES:
+        piece = board.piece_at(square)
+        if piece:
+            match piece.piece_type:
+                case chess.QUEEN:
+                    queens += 1
+                case _:
+                    continue
+    
+    # Game-phase dependent weight
+    game_phase_factor = 1
+    if queens == 2:  # Early game (material and central control matter more)
+        game_phase_factor = 1.5
+    else:  # Late game (material becomes more important)
+        game_phase_factor = 0.8
+
+    # Evaluate based on material, piece-square tables (PST), and centre control
+    material_eval = calculateBoardMaterial(board) * game_phase_factor
+    pst_eval = calculatePST(board) * 0.5  # Scale down PST influence early in the game
+    centre_control_eval = calculateCentreControl(board) * game_phase_factor
+
+    eval = material_eval + pst_eval + centre_control_eval
 
     return eval
 
-def searchCaptures(board: chess.Board, alpha: int, beta: int):
+def searchCaptures(board: chess.Board, alpha: int, beta: int, depth: int = 0):
     eval = evaluate(board)
-    if (eval >= beta):
+    if eval >= beta:
         return beta
     alpha = max(alpha, eval)
 
-    captures = [move for move in board.legal_moves if board.is_capture(move)]
+    if depth >= 4: 
+        return alpha
+    
+    captures = []
+    
+    for move in board.legal_moves:
+        if board.is_capture(move):
+            captures.append(move)
 
     for move in captures:
         board.push(move)
-        eval = -searchCaptures(board, -beta, -alpha)
+        eval = -searchCaptures(board, -beta, -alpha, depth + 1)
         board.pop()
 
         if eval >= beta:
             return beta
         alpha = max(alpha, eval)
-    
+
     return alpha
 
-
+def piece_hanging(board: chess.Board, move: chess.Move):
+    moving_piece = board.piece_at(move.from_square)
+    board.push(move)
+    is_hanging = not board.is_attacked_by(moving_piece.color, move.to_square)
+    board.pop()
+    return is_hanging
 
 def minimax(board: chess.Board, depth: int, alpha: int, beta: int, isMax: bool):
     if (depth == 0) or board.is_game_over():
-        return(searchCaptures(board, alpha, beta)), None, []
+        return (evaluate(board)), None, []
     
-    moves = list(board.legal_moves)
+    moves = []
     bestMove = None
     bestPV = []
+    for move in list(board.legal_moves):
+        # if piece_hanging(board, move):  
+        #     continue
+        moves.append(move)
     
     if(isMax):
         maxEval = float('-inf')
@@ -202,11 +252,10 @@ def find_best_move(board, depth):
     return eval, bestMove, pv
 
 def main():
-    board = chess.Board("r1bqkb1r/ppp2ppp/2np1n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1")
+    board = chess.Board("rnbqkb1r/ppp2ppp/3p1n2/1N2p3/8/5N2/PPPPPPPP/R1BQKB1R w KQkq - 0 4")
     game_board = display.start()
     print("Before Advantage: " + str(evaluate(board)))
-    print(board.legal_moves)
-    eval, bestMove, pv = find_best_move(board, 3)
+    eval, bestMove, pv = find_best_move(board, 4)
     print("New advantage: " + str(eval) + " ", [move.uci() for move in pv])
     board.push(bestMove)
     while True:
