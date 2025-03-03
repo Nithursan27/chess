@@ -1,19 +1,18 @@
 import chess
 from chessboard import display
-import numpy
 import chess.svg
 
 pieceValues = {
-    'p': -10,
-    'n': -30,
-    'b': -30,
-    'r': -50,
-    'q': -90,
-    'P': 10,
-    'N': 30,
-    'B': 30,
-    'R': 50,
-    'Q': 90
+    'p': -20,
+    'n': -60,
+    'b': -60,
+    'r': -100,
+    'q': -180,
+    'P': 20,
+    'N': 60,
+    'B': 60,
+    'R': 100,
+    'Q': 180
 }
 
 pawnTable = [
@@ -142,58 +141,28 @@ def evaluate(board: chess.Board):
     if board.is_stalemate() or board.is_insufficient_material() or board.is_seventyfive_moves():
         return 0
     
-    queens = 0
+    # queens = 0
     
-    for square in chess.SQUARES:
-        piece = board.piece_at(square)
-        if piece:
-            match piece.piece_type:
-                case chess.QUEEN:
-                    queens += 1
-                case _:
-                    continue
+    # for square in chess.SQUARES:
+    #     piece = board.piece_at(square)
+    #     if piece:
+    #         match piece.piece_type:
+    #             case chess.QUEEN:
+    #                 queens += 1
+    #             case _:
+    #                 continue
     
-    # Game-phase dependent weight
-    game_phase_factor = 1
-    if queens == 2:  # Early game (material and central control matter more)
-        game_phase_factor = 1.5
-    else:  # Late game (material becomes more important)
-        game_phase_factor = 0.8
+    game_phase_factor = 1.5
+    # if queens != 2:  
+    #     game_phase_factor = 1
 
-    # Evaluate based on material, piece-square tables (PST), and centre control
     material_eval = calculateBoardMaterial(board) * game_phase_factor
-    pst_eval = calculatePST(board) * 0.5  # Scale down PST influence early in the game
+    pst_eval = calculatePST(board) * 0.5  
     centre_control_eval = calculateCentreControl(board) * game_phase_factor
 
     eval = material_eval + pst_eval + centre_control_eval
 
     return eval
-
-def searchCaptures(board: chess.Board, alpha: int, beta: int, depth: int = 0):
-    eval = evaluate(board)
-    if eval >= beta:
-        return beta
-    alpha = max(alpha, eval)
-
-    if depth >= 4: 
-        return alpha
-    
-    captures = []
-    
-    for move in board.legal_moves:
-        if board.is_capture(move):
-            captures.append(move)
-
-    for move in captures:
-        board.push(move)
-        eval = -searchCaptures(board, -beta, -alpha, depth + 1)
-        board.pop()
-
-        if eval >= beta:
-            return beta
-        alpha = max(alpha, eval)
-
-    return alpha
 
 def piece_hanging(board: chess.Board, move: chess.Move):
     moving_piece = board.piece_at(move.from_square)
@@ -214,7 +183,7 @@ def order_moves(board: chess.Board):
 
 def minimax(board: chess.Board, depth: int, alpha: int, beta: int, isMax: bool):
     if (depth == 0) or board.is_game_over():
-        return (searchCaptures(board, alpha, beta, depth)), None, []
+        return (evaluate(board)), None, []
     
     moves = order_moves(board)
     bestMove = None
