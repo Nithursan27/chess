@@ -2,7 +2,7 @@ import minimax
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.datasets import make_blobs
+import random
 
 import chess.pgn
 
@@ -16,9 +16,26 @@ def convert_outcome(outcome):
             return 'Draw'
         case _:
             return 'Error'
+        
+#Finish this method
+def generate_position(board: chess.Board, moves):
+        
+    i = random.randint(1,20)
+    for move in moves:
+        if board.is_game_over():
+            board.pop()
+            break
+        elif i <= 0:
+            break
+        board.push(move)
+        i -= 1 
+    return board
+
+def extract_data(board: chess.Board):
+    return np.array([minimax.evaluate(board), len(list(board.legal_moves))])
 
 def initialise_data():
-    pgn = open("data/2500-4000.pgn")
+    pgn = open("data/3000-4000.pgn")
     evaluation_scores = []
     mobility_scores = []
     outcomes = []
@@ -27,9 +44,7 @@ def initialise_data():
     while (i < sample_count):
         game = chess.pgn.read_game(pgn)
         if game is not None:
-            board = game.board()
-            for move in game.mainline_moves():
-                board.push(move)
+            board = generate_position(game.board(), game.mainline_moves())
             
             evaluation = minimax.evaluate(board)
             mobility = len(list(board.legal_moves))
@@ -82,19 +97,27 @@ def k_means(X, k, max_iters=100, tol=1e-4):
         centroids = new_centroids
     return centroids, clusters
 
+def predict(new_data_point, centroids):
+    distances = np.linalg.norm(new_data_point - centroids, axis=1)
+    closest_centroid_index = np.argmin(distances)
+    return closest_centroid_index
 
 def main():
     data = initialise_data()
     X = data[0]
     y = data[1]
-    print(X)
     k = 3
     final_centroids, final_clusters = k_means(X, k)
 
-    plt.scatter(X[:, 0], X[:, 1], c=final_clusters, s=50, cmap='viridis')
-    plt.scatter(final_centroids[:, 0], final_centroids[:, 1], s=200, c='red', alpha=0.75)
-    plt.title("K-Means Clustering Result")
-    plt.show()
+    # plt.scatter(X[:, 0], X[:, 1], c=final_clusters, s=50, cmap='viridis')
+    # plt.scatter(final_centroids[:, 0], final_centroids[:, 1], s=200, c='red', alpha=0.75)
+    # plt.title("K-Means Clustering Result")
+    # plt.show()
+
+    print("Cluster Centroids and Their Indices:")
+    for i, centroid in enumerate(final_centroids):
+        print(f"Cluster {i}: {centroid}")
     
+    return final_centroids, final_clusters
 if __name__ == "__main__":
     main()

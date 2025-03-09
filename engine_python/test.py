@@ -1,37 +1,40 @@
 import minimax
+import kmeans
 from chessboard import display
 import chess
+import random
 import chess.polyglot
 import chess.engine
 from time import sleep
 
 
 
-def test(stockfish, depth = 4):
+def test(setting, depth = 4):
     board = chess.Board()
 
     engine = chess.engine.SimpleEngine.popen_uci(r"C:\Users\Nithu\Desktop\chess\stockfish\stockfish-windows-x86-64-avx2.exe")
     game_board = display.start()
+    centroids, _ = kmeans.main()
 
     engine.configure({"Skill Level": 0})
     checkBook = True
 
-    if stockfish:
-        while not board.is_game_over():
+    if setting == 1:
+        while True:
             display.check_for_quit()
 
             if board.turn == chess.WHITE:
                 if checkBook:
-                    with chess.polyglot.open_reader(r"C:\Users\Nithu\Desktop\chess\engine_python\data\baron30.bin") as reader:
+                    with chess.polyglot.open_reader(r"C:\Users\Nithu\Desktop\chess\engine_python\data\Cerebellum3Merge.bin") as reader:
                         if not list(reader.find_all(board)):
                             checkBook = False
-                            eval, best_move, pv = minimax.find_best_move(board, depth)
+                            eval, best_move, pv = minimax.find_best_move(board, depth, centroids)
                             board.push(best_move)
 
                         for entry in reader.find_all(board):
                             board.push(entry.move)
                 else:
-                    eval, best_move, pv = minimax.find_best_move(board, depth)
+                    eval, best_move, pv = minimax.find_best_move(board, depth, centroids)
                     board.push(best_move)
 
             else:
@@ -40,12 +43,12 @@ def test(stockfish, depth = 4):
 
             display.update(board.fen(), game_board)
             sleep(1)
-    else:
+    elif setting == 2:
         while not board.is_game_over():
             display.check_for_quit()
 
             if board.turn == chess.WHITE:
-                eval, best_move, pv = minimax.find_best_move(board, depth)
+                eval, best_move, pv = minimax.find_best_move(board, depth, centroids)
                 board.push(best_move)
 
             else:
@@ -54,9 +57,23 @@ def test(stockfish, depth = 4):
 
             display.update(board.fen(), game_board)
             sleep(1)
+    else:
+        while not board.is_game_over():
+            display.check_for_quit()
+
+            if board.turn == chess.WHITE:
+                eval, best_move, pv = minimax.find_best_move(board, depth, centroids)
+                board.push(best_move)
+
+            else:
+                result = random.choice(list(board.legal_moves))
+                board.push(result)
+
+            display.update(board.fen(), game_board)
+            sleep(1)
 
 
     engine.quit()
 
 if __name__ == "__main__":
-    test(True)
+    test(1)
