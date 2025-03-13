@@ -9,7 +9,7 @@ import chess.pgn
 CREATE_NEW_SAMPLE = False
 PGN_PATH = "data/2500-4000nodraws.pgn"
 SAMPLE_COUNT = 2500
-CLUSTER_SIZE = 2
+CLUSTER_SIZE = 17
 
 def convert_outcome(outcome):
     match outcome:
@@ -154,11 +154,8 @@ def main():
     for i, centroid in enumerate(final_centroids):
         print(f"Cluster {i}: {centroid}")
 
-    filename = "KMeans_" + str(X.size) + "_" + str(CLUSTER_SIZE) + "_clusters.txt"
-    with open(filename, "w") as f:
-        for centroid in final_centroids:
-            f.write(f"{centroid}")
-            f.write("\n")
+    filename = "KMeans_" + str(X.size) + "_" + str(CLUSTER_SIZE) + "_clusters.csv"
+    np.savetxt(filename, final_centroids, delimiter=",")
 
     calculate_metrics(final_centroids, SAMPLE_COUNT)
     
