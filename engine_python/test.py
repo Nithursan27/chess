@@ -12,9 +12,9 @@ USER = 2
 RANDOM = 3
 
 STOCKFISH_ENGINE_PATH = r"C:\Users\Nithu\Desktop\chess\stockfish\stockfish-windows-x86-64-avx2.exe"
-OPENING_BOOK_PATH = r"C:\Users\Nithu\Desktop\chess\engine_python\data\baron30.bin"
+OPENING_BOOK_PATH = r"C:\Users\Nithu\Desktop\chess\engine_python\data\Cerebellum3Merge.bin"
 
-CURRENT = STOCKFISH
+CURRENT = RANDOM
 
 def test(setting, depth = 4):
     board = chess.Board()

@@ -3,23 +3,36 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import random
-
+from sklearn.metrics import f1_score, accuracy_score
 import chess.pgn
 
 CREATE_NEW_SAMPLE = False
-PGN_PATH = "data/2500-4000.pgn"
-SAMPLE_COUNT = 1000
-CLUSTER_SIZE = 3
+PGN_PATH = "data/2500-4000nodraws.pgn"
+SAMPLE_COUNT = 2500
+CLUSTER_SIZE = 2
+
+def convert_outcome(outcome):
+    match outcome:
+        case '1-0':
+            return 'White'
+        case '0-1':
+            return 'Black'
+        case '1/2-1/2':
+            return 'Draw'
+        case _:
+            return 'Error'
+    
 
 def generate_sample(PGN_PATH, sample_count):
     pgn = open(PGN_PATH)
     filename = "%s.txt" % (str(sample_count) + "_samples")
+    outcomeFile = "%s.txt" % (str(sample_count) + "_outcomes")
     i = 0
     while (i < sample_count):
         game = chess.pgn.read_game(pgn)
-        board = game.board()
         move_count = random.randint(1,30)
-        if game is not None:
+        if game is not None and (game.headers["Result"] != '1/2-1/2'):
+            board = game.board()
             for move in game.mainline_moves():
                 if board.is_game_over():
                     board.pop()
@@ -31,6 +44,9 @@ def generate_sample(PGN_PATH, sample_count):
             
             with open(filename, "a") as f:
                 f.write(board.board_fen())
+                f.write("\n")
+            with open(outcomeFile, "a") as f:
+                f.write(convert_outcome(game.headers["Result"]))
                 f.write("\n")
         else:
             i -= 1
@@ -95,6 +111,34 @@ def predict(new_data_point, centroids):
     closest_centroid_index = np.argmin(distances)
     return closest_centroid_index
 
+def calculate_metrics(centroids, sample_count):
+    y_actual = []
+    y_predicted = []
+    filename = "%s.txt" % (str(sample_count) + "_samples")
+    outcomeFile = "%s.txt" % (str(sample_count) + "_outcomes") 
+    white_adv = np.argmax(centroids[:, 0])
+    black_adv = np.argmin(centroids[:, 0])
+    with open(outcomeFile, "r") as f:
+        for line in f:
+            if not line.isspace(): 
+                y_actual.append(line.strip())
+    with open(filename, "r") as f:
+        for line in f:
+            if not line.isspace():
+                board = chess.Board(line.strip())
+                prediction = predict(extract_prediction_data(board), centroids)
+                if prediction == white_adv:
+                    y_predicted.append("White")
+                elif prediction == black_adv:
+                    y_predicted.append("Black")
+                else:
+                    y_predicted.append("Draw")
+    
+    score = f1_score(y_actual, y_predicted, average="weighted")
+    accuracy = accuracy_score(y_actual, y_predicted)
+    print("Accuracy: " + str(accuracy))
+    print("F1 Score: " + str(score))
+
 def main():
     if CREATE_NEW_SAMPLE:
         generate_sample(PGN_PATH, SAMPLE_COUNT)
@@ -115,6 +159,8 @@ def main():
         for centroid in final_centroids:
             f.write(f"{centroid}")
             f.write("\n")
+
+    calculate_metrics(final_centroids, SAMPLE_COUNT)
     
     return final_centroids, final_clusters
 
