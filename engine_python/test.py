@@ -12,7 +12,6 @@ USER = 2
 RANDOM = 3
 
 STOCKFISH_ENGINE_PATH = r"C:\Users\Nithu\Desktop\chess\stockfish\stockfish-windows-x86-64-avx2.exe"
-OPENING_BOOK_PATH = r"C:\Users\Nithu\Desktop\chess\engine_python\data\Cerebellum3Merge.bin"
 
 CURRENT = RANDOM
 
@@ -24,25 +23,14 @@ def test(setting, depth = 4):
     centroids, _ = kmeans.main()
 
     engine.configure({"Skill Level": 0})
-    check_book = True
 
     if setting == 1:
         while True:
             display.check_for_quit()
 
             if board.turn == chess.WHITE:
-                if check_book:
-                    with chess.polyglot.open_reader(OPENING_BOOK_PATH) as reader:
-                        if not list(reader.find_all(board)):
-                            check_book = False
-                            eval, best_move, pv = minimax.find_best_move(board, depth, centroids)
-                            board.push(best_move)
-
-                        for entry in reader.find_all(board):
-                            board.push(entry.move)
-                else:
-                    eval, best_move, pv = minimax.find_best_move(board, depth, centroids)
-                    board.push(best_move)
+                eval, best_move, pv = minimax.find_best_move(board, depth)
+                board.push(best_move)
 
             else:
                 result = engine.play(board, chess.engine.Limit(time=0.1))
