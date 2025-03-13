@@ -4,7 +4,7 @@ import chess.svg
 import kmeans
 import numpy as np
 
-pieceValues = {
+piece_values = {
     'p': -10,
     'n': -30,
     'b': -30,
@@ -17,7 +17,7 @@ pieceValues = {
     'Q': 90
 }
 
-pawnTable = [
+pawn_table = [
 0,   0,   0,   0,   0,   0,   0,   0,
 30,  30,  30,  40,  40,  30,  30,  30,
 20,  20,  20,  30,  30,  30,  20,  20,
@@ -28,7 +28,7 @@ pawnTable = [
 0,   0,   0,   0,   0,   0,   0,   0
 ]
 
-knightTable = [
+knight_table = [
 -5,  -5, -5, -5, -5, -5,  -5, -5,
 -5,   0,  0, 10, 10,  0,   0, -5,
 -5,   5, 10, 10, 10, 10,   5, -5,
@@ -39,7 +39,7 @@ knightTable = [
 -5, -10, -5, -5, -5, -5, -10, -5
 ]
 
-bishopTable = [
+bishop_table = [
 0,   0,   0,   0,   0,   0,   0,   0,
 0,   0,   0,   0,   0,   0,   0,   0,
 0,   0,   0,   0,   0,   0,   0,   0,
@@ -50,7 +50,7 @@ bishopTable = [
 0,   0, -10,   0,   0, -10,   0,   0
 ]
 
-rookTable = [
+rook_table = [
 10,  10,  10,  10,  10,  10,  10,  10,
 10,  10,  10,  10,  10,  10,  10,  10,
 0,   0,   0,   0,   0,   0,   0,   0,
@@ -61,7 +61,7 @@ rookTable = [
 0,   0,   0,  10,  10,   5,   0,   0
 ]
 
-queenTable = [
+queen_table = [
 -20, -10, -10, -5, -5, -10, -10, -20,
 -10,   0,   0,  0,  0,   0,   0, -10,
 -10,   0,   5,  5,  5,   5,   0, -10,
@@ -72,7 +72,7 @@ queenTable = [
 -20, -10, -10,  0,  0, -10, -10, -20
 ]
 
-kingTable = [
+king_table = [
 0, 0,  0,  0,   0,  0,  0, 0,
 0, 0,  0,  0,   0,  0,  0, 0,
 0, 0,  0,  0,   0,  0,  0, 0,
@@ -83,15 +83,15 @@ kingTable = [
 0, 0, 10, -5,  -5, -5, 10, 0
 ]
 
-def calculateBoardMaterial(board: chess.Board):
+def calculate_board_material(board: chess.Board):
     pieces = board.board_fen()
     advantage = 0
     for piece in pieces:
-        advantage += pieceValues.get(piece, 0)
+        advantage += piece_values.get(piece, 0)
     
     return advantage
 
-def calculatePST(board: chess.Board):
+def calculate_PST(board: chess.Board):
     eval = 0
 
     for square in chess.SQUARES:
@@ -99,17 +99,17 @@ def calculatePST(board: chess.Board):
         if piece:
             match piece.piece_type:
                 case chess.PAWN:
-                    table = pawnTable
+                    table = pawn_table
                 case chess.BISHOP:
-                    table = bishopTable
+                    table = bishop_table
                 case chess.KNIGHT:
-                    table = knightTable
+                    table = knight_table
                 case chess.ROOK:
-                    table = rookTable
+                    table = rook_table
                 case chess.QUEEN:
-                    table = queenTable
+                    table = queen_table
                 case chess.KING:
-                    table = kingTable
+                    table = king_table
                 case _:
                     continue
             if piece.color == chess.BLACK:
@@ -122,7 +122,7 @@ def calculatePST(board: chess.Board):
         
     return eval
 
-def calculateCentreControl(board: chess.Board):
+def calculate_centre_control(board: chess.Board):
     centre_control = 0
     centre_squares = [chess.square(3, 3), chess.square(3, 4), chess.square(4, 3), chess.square(4, 4)]
     for square in centre_squares:
@@ -137,17 +137,17 @@ def calculateCentreControl(board: chess.Board):
 def evaluate(board: chess.Board):
     if board.is_checkmate():
         if board.turn == chess.WHITE:
-            return float('-inf')
-        return float('inf')
+            return float('-inf') + 1
+        return float('inf') - 1
     if board.is_stalemate() or board.is_insufficient_material() or board.is_seventyfive_moves():
         return 0
 
     #Add endgame check
     game_phase_factor = 1.5
 
-    material_eval = calculateBoardMaterial(board) * game_phase_factor
-    pst_eval = calculatePST(board) * 0.5  
-    centre_control_eval = calculateCentreControl(board) * game_phase_factor
+    material_eval = calculate_board_material(board) 
+    pst_eval = calculate_PST(board) * 0.4  
+    centre_control_eval = calculate_centre_control(board)
 
     eval = material_eval + pst_eval + centre_control_eval
 
@@ -161,37 +161,37 @@ def piece_hanging(board: chess.Board, move: chess.Move):
     return is_hanging
 
 def order_moves(board: chess.Board):
-    captureMoves = []
-    nonCaptureMoves = []
+    capture_moves = []
+    non_capture_moves = []
     for move in board.legal_moves:
         if board.is_capture(move):
-            captureMoves.append(move)
+            capture_moves.append(move)
         else:
-            nonCaptureMoves.append(move)
-    return captureMoves + nonCaptureMoves
+            non_capture_moves.append(move)
+    return capture_moves + non_capture_moves
 
-def should_prune(board, move, centroids, isWhite):
+def should_prune(board, move, centroids, is_white):
     board.push(move)
-    index = kmeans.predict(kmeans.extract_data(board), centroids)
+    index = kmeans.predict(kmeans.extract_prediction_data(board), centroids)
     board.pop()
     white_adv = np.argmax(centroids[:, 0])
     black_adv = np.argmin(centroids[:, 0])
-    if isWhite and index == black_adv:
+    if is_white and index == black_adv:
         return True
-    elif not isWhite and index == white_adv:
+    elif not is_white and index == white_adv:
         return True
     return False
     
-def minimax(board: chess.Board, depth: int, alpha: int, beta: int, isMax: bool, centroids):
+def minimax(board: chess.Board, depth: int, alpha: int, beta: int, is_max: bool, centroids):
     if (depth == 0) or board.is_game_over():
         return (evaluate(board)), None, []
     
     moves = order_moves(board)
-    bestMove = None
-    bestPV = []
+    best_move = None
+    best_PV = []
     
-    if(isMax):
-        maxEval = float('-inf')
+    if(is_max):
+        max_eval = float('-inf')
         for move in moves:
             # if should_prune(board, move, centroids, True):
             #     print("Pruned white")
@@ -199,18 +199,18 @@ def minimax(board: chess.Board, depth: int, alpha: int, beta: int, isMax: bool, 
             board.push(move)
             eval, _, pv = minimax(board, depth - 1, alpha, beta, False, centroids)
             board.pop()
-            if eval > maxEval:
-                maxEval = eval
-                bestMove = move
-                bestPV = [move] + pv
+            if eval > max_eval:
+                max_eval = eval
+                best_move = move
+                best_PV = [move] + pv
             alpha = max(alpha, eval)
             if (beta <= alpha):
                 break
         
-        return maxEval, bestMove, bestPV
+        return max_eval, best_move, best_PV
     
     else:
-        minEval = float('inf')
+        min_eval = float('inf')
         for move in moves:
             # if should_prune(board, move, centroids, False):
             #     print("Pruned black")
@@ -218,28 +218,28 @@ def minimax(board: chess.Board, depth: int, alpha: int, beta: int, isMax: bool, 
             board.push(move)
             eval, _, pv = minimax(board, depth - 1, alpha, beta, True, centroids)
             board.pop()
-            if eval < minEval:
-                minEval = eval
-                bestMove = move
-                bestPV = [move] + pv
+            if eval < min_eval:
+                min_eval = eval
+                best_move = move
+                best_PV = [move] + pv
             beta = min(beta, eval)
             if (beta <= alpha):
                 break
         
-        return minEval, bestMove, bestPV
+        return min_eval, best_move, best_PV
 
 def find_best_move(board, depth, centroids):
-    isMax = board.turn == chess.WHITE
-    eval, bestMove, pv = minimax(board, depth, float('-inf'), float('inf'), isMax, centroids)
-    return eval, bestMove, pv
+    is_max = board.turn == chess.WHITE
+    eval, best_move, pv = minimax(board, depth, float('-inf'), float('inf'), is_max, centroids)
+    return eval, best_move, pv
 
 def main():
     board = chess.Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/QBQQKQBQ w kq - 0 1")
     # game_board = display.start()
     # print("Before Advantage: " + str(evaluate(board)))
-    # eval, bestMove, pv = find_best_move(board, 4)
+    # eval, best_move, pv = find_best_move(board, 4)
     # print("New advantage: " + str(eval) + " ", [move.uci() for move in pv])
-    # board.push(bestMove)
+    # board.push(best_move)
     # while True:
     #     display.check_for_quit()
     #     display.update(board.fen(), game_board)

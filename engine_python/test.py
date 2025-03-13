@@ -7,27 +7,34 @@ import chess.polyglot
 import chess.engine
 from time import sleep
 
+STOCKFISH = 1
+USER = 2
+RANDOM = 3
 
+STOCKFISH_ENGINE_PATH = r"C:\Users\Nithu\Desktop\chess\stockfish\stockfish-windows-x86-64-avx2.exe"
+OPENING_BOOK_PATH = r"C:\Users\Nithu\Desktop\chess\engine_python\data\baron30.bin"
+
+CURRENT = STOCKFISH
 
 def test(setting, depth = 4):
     board = chess.Board()
 
-    engine = chess.engine.SimpleEngine.popen_uci(r"C:\Users\Nithu\Desktop\chess\stockfish\stockfish-windows-x86-64-avx2.exe")
+    engine = chess.engine.SimpleEngine.popen_uci(STOCKFISH_ENGINE_PATH)
     game_board = display.start()
     centroids, _ = kmeans.main()
 
     engine.configure({"Skill Level": 0})
-    checkBook = True
+    check_book = True
 
     if setting == 1:
         while True:
             display.check_for_quit()
 
             if board.turn == chess.WHITE:
-                if checkBook:
-                    with chess.polyglot.open_reader(r"C:\Users\Nithu\Desktop\chess\engine_python\data\Cerebellum3Merge.bin") as reader:
+                if check_book:
+                    with chess.polyglot.open_reader(OPENING_BOOK_PATH) as reader:
                         if not list(reader.find_all(board)):
-                            checkBook = False
+                            check_book = False
                             eval, best_move, pv = minimax.find_best_move(board, depth, centroids)
                             board.push(best_move)
 
@@ -76,4 +83,4 @@ def test(setting, depth = 4):
     engine.quit()
 
 if __name__ == "__main__":
-    test(1)
+    test(CURRENT)
