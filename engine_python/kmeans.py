@@ -7,8 +7,8 @@ from sklearn.metrics import f1_score, accuracy_score
 import chess.pgn
 
 CREATE_NEW_SAMPLE = False
-PGN_PATH = "data/2500-4000nodraws.pgn"
-SAMPLE_COUNT = 2500
+PGN_PATH = "data/2500-4000.pgn"
+SAMPLE_COUNT = 3000
 CLUSTER_SIZE = 17
 
 def convert_outcome(outcome):
@@ -53,10 +53,10 @@ def generate_sample(PGN_PATH, sample_count):
         i += 1
 
 def extract_features(board: chess.Board):
-    eval = minimax.evaluate(board)
+    material = minimax.calculate_board_material(board)
     mobility = len(list(board.legal_moves))
     positioning = minimax.calculate_PST(board)
-    return [eval, mobility, positioning]
+    return [material, mobility, positioning]
 
 #Improve to add more features
 def extract_prediction_data(board: chess.Board):
@@ -150,6 +150,8 @@ def main():
     plt.title("K-Means Clustering Result")
     plt.show()
 
+    final_centroids = np.array(sorted(final_centroids, key=lambda final_centroids: final_centroids[0]))
+    print(str(len(final_centroids) / 2))
     print("Cluster Centroids and Their Indices:")
     for i, centroid in enumerate(final_centroids):
         print(f"Cluster {i}: {centroid}")
@@ -157,7 +159,7 @@ def main():
     filename = "KMeans_" + str(X.size) + "_" + str(CLUSTER_SIZE) + "_clusters.csv"
     np.savetxt(filename, final_centroids, delimiter=",")
 
-    calculate_metrics(final_centroids, SAMPLE_COUNT)
+    # calculate_metrics(final_centroids, SAMPLE_COUNT)
     
     return final_centroids, final_clusters
 

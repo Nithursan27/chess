@@ -18,69 +18,69 @@ piece_values = {
 }
 
 pawn_table = [
-0,   0,   0,   0,   0,   0,   0,   0,
-30,  30,  30,  40,  40,  30,  30,  30,
-20,  20,  20,  30,  30,  30,  20,  20,
-10,  10,  15,  25,  25,  15,  10,  10,
-5,   5,   5,  20,  20,   5,   5,   5,
-5,   0,   0,   5,   5,   0,   0,   5,
-5,   5,   5, -10, -10,   5,   5,   5,
-0,   0,   0,   0,   0,   0,   0,   0
+ 0,  0,  0,  0,  0,  0,  0,  0,
+50, 50, 50, 50, 50, 50, 50, 50,
+10, 10, 20, 30, 30, 20, 10, 10,
+ 5,  5, 10, 25, 25, 10,  5,  5,
+ 0,  0,  0, 20, 20,  0,  0,  0,
+ 5, -5,-10,  0,  0,-10, -5,  5,
+ 5, 10, 10,-20,-20, 10, 10,  5,
+ 0,  0,  0,  0,  0,  0,  0,  0
 ]
 
 knight_table = [
--5,  -5, -5, -5, -5, -5,  -5, -5,
--5,   0,  0, 10, 10,  0,   0, -5,
--5,   5, 10, 10, 10, 10,   5, -5,
--5,   5, 10, 15, 15, 10,   5, -5,
--5,   5, 10, 15, 15, 10,   5, -5,
--5,   5, 10, 10, 10, 10,   5, -5,
--5,   0,  0,  5,  5,  0,   0, -5,
--5, -10, -5, -5, -5, -5, -10, -5
+-50,-40,-30,-30,-30,-30,-40,-50,
+-40,-20,  0,  0,  0,  0,-20,-40,
+-30,  0, 10, 15, 15, 10,  0,-30,
+-30,  5, 15, 20, 20, 15,  5,-30,
+-30,  0, 15, 20, 20, 15,  0,-30,
+-30,  5, 10, 15, 15, 10,  5,-30,
+-40,-20,  0,  5,  5,  0,-20,-40,
+-50,-40,-30,-30,-30,-30,-40,-50
 ]
 
 bishop_table = [
-0,   0,   0,   0,   0,   0,   0,   0,
-0,   0,   0,   0,   0,   0,   0,   0,
-0,   0,   0,   0,   0,   0,   0,   0,
-0,  10,   0,   0,   0,   0,  10,   0,
-5,   0,  10,   0,   0,  10,   0,   5,
-0,  10,   0,  10,  10,   0,  10,   0,
-0,  10,   0,  10,  10,   0,  10,   0,
-0,   0, -10,   0,   0, -10,   0,   0
+-20,-10,-10,-10,-10,-10,-10,-20,
+-10,  0,  0,  0,  0,  0,  0,-10,
+-10,  0,  5, 10, 10,  5,  0,-10,
+-10,  5,  5, 10, 10,  5,  5,-10,
+-10,  0, 10, 10, 10, 10,  0,-10,
+-10, 10, 10, 10, 10, 10, 10,-10,
+-10,  5,  0,  0,  0,  0,  5,-10,
+-20,-10,-10,-10,-10,-10,-10,-20
 ]
 
 rook_table = [
-10,  10,  10,  10,  10,  10,  10,  10,
-10,  10,  10,  10,  10,  10,  10,  10,
-0,   0,   0,   0,   0,   0,   0,   0,
-0,   0,   0,   0,   0,   0,   0,   0,
-0,   0,   0,   0,   0,   0,   0,   0,
-0,   0,   0,   0,   0,   0,   0,   0,
-0,   0,   0,  10,  10,   0,   0,   0,
-0,   0,   0,  10,  10,   5,   0,   0
+  0,  0,  0,  0,  0,  0,  0,  0,
+  5, 10, 10, 10, 10, 10, 10,  5,
+ -5,  0,  0,  0,  0,  0,  0, -5,
+ -5,  0,  0,  0,  0,  0,  0, -5,
+ -5,  0,  0,  0,  0,  0,  0, -5,
+ -5,  0,  0,  0,  0,  0,  0, -5,
+ -5,  0,  0,  0,  0,  0,  0, -5,
+  0,  0,  0,  5,  5,  0,  0,  0
 ]
 
 queen_table = [
--20, -10, -10, -5, -5, -10, -10, -20,
--10,   0,   0,  0,  0,   0,   0, -10,
--10,   0,   5,  5,  5,   5,   0, -10,
--5,   0,   5,  5,  5,   5,   0,  -5,
--5,   0,   5,  5,  5,   5,   0,  -5,
--10,   5,   5,  5,  5,   5,   0, -10,
--10,   0,   5,  0,  0,   0,   0, -10,
--20, -10, -10,  0,  0, -10, -10, -20
+-20,-10,-10, -5, -5,-10,-10,-20,
+-10,  0,  0,  0,  0,  0,  0,-10,
+-10,  0,  5,  5,  5,  5,  0,-10,
+ -5,  0,  5,  5,  5,  5,  0, -5,
+  0,  0,  5,  5,  5,  5,  0, -5,
+-10,  5,  5,  5,  5,  5,  0,-10,
+-10,  0,  5,  0,  0,  0,  0,-10,
+-20,-10,-10, -5, -5,-10,-10,-20
 ]
 
 king_table = [
-0, 0,  0,  0,   0,  0,  0, 0,
-0, 0,  0,  0,   0,  0,  0, 0,
-0, 0,  0,  0,   0,  0,  0, 0,
-0, 0,  0,  0,   0,  0,  0, 0,
-0, 0,  0,  0,   0,  0,  0, 0,
-0, 0,  0,  0,   0,  0,  0, 0,
-0, 0,  0, -5,  -5, -5,  0, 0,
-0, 0, 10, -5,  -5, -5, 10, 0
+-30,-40,-40,-50,-50,-40,-40,-30,
+-30,-40,-40,-50,-50,-40,-40,-30,
+-30,-40,-40,-50,-50,-40,-40,-30,
+-30,-40,-40,-50,-50,-40,-40,-30,
+-20,-30,-30,-40,-40,-30,-30,-20,
+-10,-20,-20,-20,-20,-20,-20,-10,
+ 20, 20,  0,  0,  0,  0, 20, 20,
+ 20, 30, 10,  0,  0, 10, 30, 20
 ]
 
 def calculate_board_material(board: chess.Board):
@@ -134,22 +134,15 @@ def calculate_centre_control(board: chess.Board):
                 centre_control -= 0.5
     return centre_control
 
-def evaluate(board: chess.Board):
+def evaluate(board: chess.Board, centroids):
     if board.is_checkmate():
         if board.turn == chess.WHITE:
-            return float('-inf') + 1
-        return float('inf') - 1
-    if board.is_stalemate() or board.is_insufficient_material() or board.is_seventyfive_moves():
-        return 0
+            return float('-inf')
+        return float('inf')
+    if board.is_stalemate() or board.is_insufficient_material() or board.is_seventyfive_moves() or board.is_fivefold_repetition():
+        return len(centroids) / 2
 
-    #Add endgame check
-    game_phase_factor = 1.5
-
-    material_eval = calculate_board_material(board) 
-    pst_eval = calculate_PST(board) * 0.4  
-    centre_control_eval = calculate_centre_control(board)
-
-    eval = material_eval + pst_eval + centre_control_eval
+    eval = kmeans.predict(kmeans.extract_prediction_data(board), centroids)
 
     return eval
 
@@ -184,7 +177,7 @@ def should_prune(board, move, centroids, is_white):
     
 def minimax(board: chess.Board, depth: int, alpha: int, beta: int, is_max: bool, centroids):
     if (depth == 0) or board.is_game_over():
-        return (evaluate(board)), None, []
+        return evaluate(board, centroids), None, []
     
     moves = order_moves(board)
     best_move = None
@@ -193,9 +186,6 @@ def minimax(board: chess.Board, depth: int, alpha: int, beta: int, is_max: bool,
     if(is_max):
         max_eval = float('-inf')
         for move in moves:
-            # if should_prune(board, move, centroids, True):
-            #     print("Pruned white")
-            #     continue
             board.push(move)
             eval, _, pv = minimax(board, depth - 1, alpha, beta, False, centroids)
             board.pop()
@@ -212,9 +202,6 @@ def minimax(board: chess.Board, depth: int, alpha: int, beta: int, is_max: bool,
     else:
         min_eval = float('inf')
         for move in moves:
-            # if should_prune(board, move, centroids, False):
-            #     print("Pruned black")
-            #     continue
             board.push(move)
             eval, _, pv = minimax(board, depth - 1, alpha, beta, True, centroids)
             board.pop()
