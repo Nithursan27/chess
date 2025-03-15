@@ -15,7 +15,7 @@ RANDOM = "RANDOM"
 STOCKFISH_ENGINE_PATH = r"C:\Users\Nithu\Desktop\chess\stockfish\stockfish-windows-x86-64-avx2.exe"
 
 #K-Means Engine Variables
-CURRENT_OPPONENT = RANDOM
+CURRENT_OPPONENT = STOCKFISH
 DEPTH = 4
 KMEANS_TURN = chess.WHITE
 
@@ -41,6 +41,8 @@ def test(setting, depth, turn):
 
         if board.turn == turn:
             eval, result, pv = minimax.find_best_move(board, depth, centroids)
+            if result == None:
+                result = random.choice(list(board.legal_moves))
 
         else:
             if setting == STOCKFISH:
