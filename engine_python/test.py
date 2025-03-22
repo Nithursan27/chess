@@ -2,6 +2,7 @@ import minimax
 import kmeans
 from chessboard import display
 import chess
+import numpy as np
 import chess.pgn
 import random
 import chess.polyglot
@@ -16,7 +17,7 @@ STOCKFISH_ENGINE_PATH = r"C:\Users\Nithu\Desktop\chess\stockfish\stockfish-windo
 
 #K-Means Engine Variables
 CURRENT_OPPONENT = STOCKFISH
-DEPTH = 4
+DEPTH = 6
 KMEANS_TURN = chess.WHITE
 
 def test(setting, depth, turn):
@@ -28,7 +29,7 @@ def test(setting, depth, turn):
         game.headers["Black"] = CURRENT_OPPONENT
     else:
         game.headers["Black"] = "K-Means"
-        game.headers["WHITE"] = CURRENT_OPPONENT
+        game.headers["White"] = CURRENT_OPPONENT
     
     engine = chess.engine.SimpleEngine.popen_uci(STOCKFISH_ENGINE_PATH)
     game_board = display.start()
@@ -42,7 +43,7 @@ def test(setting, depth, turn):
         if board.turn == turn:
             eval, result, pv = minimax.find_best_move(board, depth, centroids)
             if result == None:
-                result = random.choice(list(board.legal_moves))
+                result = list(board.legal_moves)[0]
 
         else:
             if setting == STOCKFISH:

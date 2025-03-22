@@ -120,7 +120,21 @@ def calculate_PST(board: chess.Board):
             else:
                 eval += -table[square]
         
-    return eval
+    return eval 
+
+def calculate_mobility(board: chess.Board):
+    if board.turn == chess.WHITE:
+        white_moves = len(list(board.legal_moves))
+        board.push(list(board.legal_moves)[0])
+        black_moves = len(list(board.legal_moves))
+        board.pop()
+    else:
+        black_moves = len(list(board.legal_moves))
+        board.push(list(board.legal_moves)[0])
+        white_moves = len(list(board.legal_moves))
+        board.pop()
+
+    return white_moves - black_moves
 
 def calculate_centre_control(board: chess.Board):
     centre_control = 0
@@ -134,6 +148,24 @@ def calculate_centre_control(board: chess.Board):
                 centre_control -= 0.5
     return centre_control
 
+def calculate_king_safety(board: chess.Board):
+    king_safety = 0
+    king_moves = [-1, 1, -8, 8, -9, 9, -7, 7]
+    white_king_square = board.king(chess.WHITE)
+    black_king_square = board.king(chess.BLACK)
+    for move in king_moves:
+        neighbour_square = white_king_square + move 
+        if 0 <= neighbour_square <= 63:
+            if board.is_attacked_by(chess.BLACK, neighbour_square):
+                king_safety -= 1
+    for move in king_moves:
+        neighbour_square = black_king_square + move 
+        if 0 <= neighbour_square <= 63:
+            if board.is_attacked_by(chess.WHITE, neighbour_square):
+                king_safety += 1
+
+    return king_safety
+
 def evaluate(board: chess.Board, centroids):
     if board.is_checkmate():
         if board.turn == chess.WHITE:
@@ -146,34 +178,20 @@ def evaluate(board: chess.Board, centroids):
 
     return eval
 
-def piece_hanging(board: chess.Board, move: chess.Move):
-    moving_piece = board.piece_at(move.from_square)
-    board.push(move)
-    is_hanging = not board.is_attacked_by(moving_piece.color, move.to_square)
-    board.pop()
-    return is_hanging
-
 def order_moves(board: chess.Board):
     capture_moves = []
     non_capture_moves = []
     for move in board.legal_moves:
         if board.is_capture(move):
-            capture_moves.append(move)
+            captured_piece = board.piece_at(move.to_square)
+            if captured_piece:
+                captured_value = piece_values.get(captured_piece.piece_type, float('inf'))
+                capture_moves.append((move, captured_value))
         else:
             non_capture_moves.append(move)
-    return capture_moves + non_capture_moves
-
-def should_prune(board, move, centroids, is_white):
-    board.push(move)
-    index = kmeans.predict(kmeans.extract_prediction_data(board), centroids)
-    board.pop()
-    white_adv = np.argmax(centroids[:, 0])
-    black_adv = np.argmin(centroids[:, 0])
-    if is_white and index == black_adv:
-        return True
-    elif not is_white and index == white_adv:
-        return True
-    return False
+    capture_moves.sort(key=lambda x: x[1])
+    sorted_capture_moves = [move[0] for move in capture_moves]
+    return sorted_capture_moves + non_capture_moves
     
 def minimax(board: chess.Board, depth: int, alpha: int, beta: int, is_max: bool, centroids):
     if (depth == 0) or board.is_game_over():
@@ -221,19 +239,23 @@ def find_best_move(board, depth, centroids):
     return eval, best_move, pv
 
 def main():
-    board = chess.Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/QBQQKQBQ w kq - 0 1")
-    # game_board = display.start()
-    # print("Before Advantage: " + str(evaluate(board)))
-    # eval, best_move, pv = find_best_move(board, 4)
-    # print("New advantage: " + str(eval) + " ", [move.uci() for move in pv])
-    # board.push(best_move)
-    # while True:
-    #     display.check_for_quit()
-    #     display.update(board.fen(), game_board)
-    centroids, _ = kmeans.main()
-    print(should_prune(board, chess.Move.from_uci("e2e3"), centroids, True))
-        
-    
+    board = chess.Board("rnb2rk1/ppp1qppp/3p4/8/2B5/6Q1/PPP1PPPP/RNB1K1NR w KQ - 0 1")
+    game_board = display.start()
+    print("Material: " + str(calculate_board_material(board)))
+    print("PST: " + str(calculate_PST(board)))
+    print("Mobility: " + str(calculate_mobility(board)))
+    print("Centre Control: " + str(calculate_centre_control(board)))
+    print("King Safety: " + str(calculate_king_safety(board)))
+
+    # centroids, _ = kmeans.main()
+
+    # eval, result, pv = find_best_move(board, 6, centroids)
+    # print("Eval: " + str(eval))
+    # print (pv)
+
+    while True:
+        display.check_for_quit()
+        display.update(board.fen(), game_board)
     
 if __name__ == "__main__":
     main()

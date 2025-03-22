@@ -2,14 +2,15 @@ import minimax
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.spatial.distance import cdist
 import random
 from sklearn.metrics import f1_score, accuracy_score
 import chess.pgn
 
 CREATE_NEW_SAMPLE = False
-PGN_PATH = "data/2500-4000.pgn"
+PGN_PATH = "data/2000-4000.pgn"
 SAMPLE_COUNT = 3000
-CLUSTER_SIZE = 17
+CENTROID_COUNT = 5
 
 def convert_outcome(outcome):
     match outcome:
@@ -31,7 +32,7 @@ def generate_sample(PGN_PATH, sample_count):
     while (i < sample_count):
         game = chess.pgn.read_game(pgn)
         move_count = random.randint(1,30)
-        if game is not None and (game.headers["Result"] != '1/2-1/2'):
+        if game is not None:
             board = game.board()
             for move in game.mainline_moves():
                 if board.is_game_over():
@@ -52,13 +53,16 @@ def generate_sample(PGN_PATH, sample_count):
             i -= 1
         i += 1
 
+#Improve to add more features
 def extract_features(board: chess.Board):
     material = minimax.calculate_board_material(board)
-    mobility = len(list(board.legal_moves))
+    mobility = minimax.calculate_mobility(board)
     positioning = minimax.calculate_PST(board)
-    return [material, mobility, positioning]
+    centre_control = minimax.calculate_centre_control(board)
+    king_safety = minimax.calculate_king_safety(board)
+    return [material, positioning, mobility, centre_control, king_safety]
 
-#Improve to add more features
+
 def extract_prediction_data(board: chess.Board):
     return np.array(extract_features(board))
 
@@ -139,11 +143,51 @@ def calculate_metrics(centroids, sample_count):
     print("Accuracy: " + str(accuracy))
     print("F1 Score: " + str(score))
 
+def calculate_elbow(X, max_clusters):
+    distortions = []
+    inertias = []
+    mapping1 = {}
+    mapping2 = {}
+    K = range(1, max_clusters)
+
+    for k in K:
+        centroids, clusters = k_means(X, k)
+    
+        distortions.append(sum(np.min(cdist(X, centroids, 'euclidean'), axis=1)**2) / X.shape[0])
+        
+
+        inertias.append(sum(np.min(cdist(X, centroids, 'euclidean'), axis=1)**2))
+        
+        mapping1[k] = distortions[-1]
+        mapping2[k] = inertias[-1]
+
+    print("Distortion values:")
+    for key, val in mapping1.items():
+        print(f'{key} : {val}')
+    # Plotting the graph of k versus Distortion
+    plt.plot(K, distortions, 'bx-')
+    plt.xlabel('Number of Clusters (k)')
+    plt.ylabel('Distortion')
+    plt.title('The Elbow Method using Distortion')
+    plt.grid()
+    plt.show()
+
+    print("Inertia values:")
+    for key, val in mapping2.items():
+        print(f'{key} : {val}')
+    # Plotting the graph of k versus Inertia
+    plt.plot(K, inertias, 'bx-')
+    plt.xlabel('Number of Clusters (k)')
+    plt.ylabel('Inertia')
+    plt.title('The Elbow Method using Inertia')
+    plt.grid()
+    plt.show()
+
 def main():
     if CREATE_NEW_SAMPLE:
         generate_sample(PGN_PATH, SAMPLE_COUNT)
     X = initialise_data(SAMPLE_COUNT)
-    final_centroids, final_clusters = k_means(X, CLUSTER_SIZE)
+    final_centroids, final_clusters = k_means(X, CENTROID_COUNT)
 
     plt.scatter(X[:, 0], X[:, 1], c=final_clusters, s=50, cmap='viridis')
     plt.scatter(final_centroids[:, 0], final_centroids[:, 1], s=200, c='red', alpha=0.75)
@@ -156,10 +200,11 @@ def main():
     for i, centroid in enumerate(final_centroids):
         print(f"Cluster {i}: {centroid}")
 
-    filename = "KMeans_" + str(X.size) + "_" + str(CLUSTER_SIZE) + "_clusters.csv"
+    # Store clusters in csv
+    filename = "KMeans_" + str(X.size) + "_" + str(CENTROID_COUNT) + "_clusters.csv"
     np.savetxt(filename, final_centroids, delimiter=",")
 
-    # calculate_metrics(final_centroids, SAMPLE_COUNT)
+    calculate_elbow(X, 10)
     
     return final_centroids, final_clusters
 
