@@ -4,13 +4,16 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 import random
-from sklearn.metrics import f1_score, accuracy_score
 import chess.pgn
 
 CREATE_NEW_SAMPLE = False
-PGN_PATH = "data/2000-4000.pgn"
-SAMPLE_COUNT = 3000
-CENTROID_COUNT = 5
+SHOW_CLUSTERING_RESULT = False #Plot graph of clusters
+SHOW_ELBOW = True #Plot distortion and inertia of clusters
+ELBOW_COUNT = 10 #Max clusters for elbow 
+PGN_PATH = "data/3000-4000.pgn"
+SAMPLE_COUNT = 12000
+CENTROID_COUNT = 12
+
 
 def convert_outcome(outcome):
     match outcome:
@@ -25,6 +28,39 @@ def convert_outcome(outcome):
     
 
 def generate_sample(PGN_PATH, sample_count):
+    pgn = open(PGN_PATH)
+    filename = "%s.txt" % (str(sample_count) + "_samples")
+    outcomeFile = "%s.txt" % (str(sample_count) + "_outcomes")
+    i = 0
+    while (i < sample_count):
+        game = chess.pgn.read_game(pgn)
+        move_count = 21 #was 35
+        if game is not None:
+            board = game.board()
+            for move in game.mainline_moves():
+                if board.is_game_over():
+                    board.pop()
+                    with open(filename, "a") as f:
+                        f.write(board.board_fen())
+                        f.write("\n")
+                    break
+                elif move_count % 7 == 0:
+                    with open(filename, "a") as f:
+                        f.write(board.board_fen())
+                        f.write("\n")
+                elif move_count < 0:
+                    break
+                board.push(move)
+                move_count -= 1
+            
+            with open(outcomeFile, "a") as f:
+                f.write(convert_outcome(game.headers["Result"]))
+                f.write("\n")
+        else:
+            i -= 1
+        i += 1
+
+def generate_sample_randomly(PGN_PATH, sample_count):
     pgn = open(PGN_PATH)
     filename = "%s.txt" % (str(sample_count) + "_samples")
     outcomeFile = "%s.txt" % (str(sample_count) + "_outcomes")
@@ -60,7 +96,7 @@ def extract_features(board: chess.Board):
     positioning = minimax.calculate_PST(board)
     centre_control = minimax.calculate_centre_control(board)
     king_safety = minimax.calculate_king_safety(board)
-    return [material, positioning, mobility, centre_control, king_safety]
+    return [material, positioning, mobility,  centre_control, king_safety]
 
 
 def extract_prediction_data(board: chess.Board):
@@ -115,39 +151,9 @@ def predict(new_data_point, centroids):
     closest_centroid_index = np.argmin(distances)
     return closest_centroid_index
 
-def calculate_metrics(centroids, sample_count):
-    y_actual = []
-    y_predicted = []
-    filename = "%s.txt" % (str(sample_count) + "_samples")
-    outcomeFile = "%s.txt" % (str(sample_count) + "_outcomes") 
-    white_adv = np.argmax(centroids[:, 0])
-    black_adv = np.argmin(centroids[:, 0])
-    with open(outcomeFile, "r") as f:
-        for line in f:
-            if not line.isspace(): 
-                y_actual.append(line.strip())
-    with open(filename, "r") as f:
-        for line in f:
-            if not line.isspace():
-                board = chess.Board(line.strip())
-                prediction = predict(extract_prediction_data(board), centroids)
-                if prediction == white_adv:
-                    y_predicted.append("White")
-                elif prediction == black_adv:
-                    y_predicted.append("Black")
-                else:
-                    y_predicted.append("Draw")
-    
-    score = f1_score(y_actual, y_predicted, average="weighted")
-    accuracy = accuracy_score(y_actual, y_predicted)
-    print("Accuracy: " + str(accuracy))
-    print("F1 Score: " + str(score))
-
 def calculate_elbow(X, max_clusters):
     distortions = []
     inertias = []
-    mapping1 = {}
-    mapping2 = {}
     K = range(1, max_clusters)
 
     for k in K:
@@ -157,29 +163,18 @@ def calculate_elbow(X, max_clusters):
         
 
         inertias.append(sum(np.min(cdist(X, centroids, 'euclidean'), axis=1)**2))
-        
-        mapping1[k] = distortions[-1]
-        mapping2[k] = inertias[-1]
 
-    print("Distortion values:")
-    for key, val in mapping1.items():
-        print(f'{key} : {val}')
-    # Plotting the graph of k versus Distortion
     plt.plot(K, distortions, 'bx-')
     plt.xlabel('Number of Clusters (k)')
     plt.ylabel('Distortion')
-    plt.title('The Elbow Method using Distortion')
+    plt.title('3000-4000 ELO, 12000 Samples Distortion')
     plt.grid()
     plt.show()
 
-    print("Inertia values:")
-    for key, val in mapping2.items():
-        print(f'{key} : {val}')
-    # Plotting the graph of k versus Inertia
     plt.plot(K, inertias, 'bx-')
     plt.xlabel('Number of Clusters (k)')
     plt.ylabel('Inertia')
-    plt.title('The Elbow Method using Inertia')
+    plt.title('3000-4000 ELO, 12000 Samples Inertia')
     plt.grid()
     plt.show()
 
@@ -189,13 +184,13 @@ def main():
     X = initialise_data(SAMPLE_COUNT)
     final_centroids, final_clusters = k_means(X, CENTROID_COUNT)
 
-    plt.scatter(X[:, 0], X[:, 1], c=final_clusters, s=50, cmap='viridis')
-    plt.scatter(final_centroids[:, 0], final_centroids[:, 1], s=200, c='red', alpha=0.75)
-    plt.title("K-Means Clustering Result")
-    plt.show()
+    if SHOW_CLUSTERING_RESULT:
+        plt.scatter(X[:, 0], X[:, 1], c=final_clusters, s=50, cmap='viridis')
+        plt.scatter(final_centroids[:, 0], final_centroids[:, 1], s=200, c='red', alpha=0.75)
+        plt.title("K-Means Clustering Result")
+        plt.show()
 
     final_centroids = np.array(sorted(final_centroids, key=lambda final_centroids: final_centroids[0]))
-    print(str(len(final_centroids) / 2))
     print("Cluster Centroids and Their Indices:")
     for i, centroid in enumerate(final_centroids):
         print(f"Cluster {i}: {centroid}")
@@ -204,7 +199,8 @@ def main():
     filename = "KMeans_" + str(X.size) + "_" + str(CENTROID_COUNT) + "_clusters.csv"
     np.savetxt(filename, final_centroids, delimiter=",")
 
-    calculate_elbow(X, 10)
+    if SHOW_ELBOW:
+        calculate_elbow(X, ELBOW_COUNT)
     
     return final_centroids, final_clusters
 

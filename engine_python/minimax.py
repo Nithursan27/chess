@@ -239,8 +239,7 @@ def find_best_move(board, depth, centroids):
     return eval, best_move, pv
 
 def main():
-    board = chess.Board("rnb2rk1/ppp1qppp/3p4/8/2B5/6Q1/PPP1PPPP/RNB1K1NR w KQ - 0 1")
-    game_board = display.start()
+    board = chess.Board("rn2q1n1/pp1k1ppr/4p3/2p3b1/8/4P3/PPPP1PPP/R1B1K2R w KQ - 0 11")
     print("Material: " + str(calculate_board_material(board)))
     print("PST: " + str(calculate_PST(board)))
     print("Mobility: " + str(calculate_mobility(board)))
@@ -252,10 +251,6 @@ def main():
     # eval, result, pv = find_best_move(board, 6, centroids)
     # print("Eval: " + str(eval))
     # print (pv)
-
-    while True:
-        display.check_for_quit()
-        display.update(board.fen(), game_board)
     
 if __name__ == "__main__":
     main()
